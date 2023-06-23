@@ -2,12 +2,13 @@
 local Plug = vim.fn['plug#']
 vim.call('plug#begin', '~/.config/nvim/plugged')
 
+-- fzf
+Plug('junegunn/fzf', { ['do'] = '{ -> fzf#install() }' })
 Plug 'williamboman/mason-lspconfig.nvim' -- Bridge between lspconfig and mason
 Plug 'nvim-lua/plenary.nvim'
 Plug 'williamboman/mason.nvim' -- TODO: some plugins that are not setup to bridge with lsp config
 Plug 'neovim/nvim-lspconfig'      -- Language Server plugin
-Plug 'itchyny/lightline.vim'
--- Snippet Engine
+Plug 'itchyny/lightline.vim' -- Snippet Engine
 Plug('L3MON4D3/LuaSnip', {['tag'] = 'v1.2.*', ['do'] = 'make install_jsregexp'})
 Plug 'saadparwaiz1/cmp_luasnip'
 -- Autocomplete nvim-cmp
@@ -40,6 +41,29 @@ require("mason").setup({
 })
 
 require("mason-lspconfig").setup()
+
+-- Tresitter Setup
+require'nvim-treesitter.configs'.setup {
+  -- A list of parser names, or "all" (the five listed parsers should always be installed)
+  ensure_installed = { "c", "lua", "vim", "help", "query" },
+
+  -- Install parsers synchronously (only applied to `ensure_installed`)
+  sync_install = false,
+
+  -- Automatically install missing parsers when entering buffer
+  -- Recommendation: set to false if you don't have `tree-sitter` CLI installed locally
+  auto_install = true,
+
+  highlight = {
+    enable = true,
+
+    -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
+    -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
+    -- Using this option may slow down your editor, and you may see some duplicate highlights.
+    -- Instead of true it can also be a list of languages
+    additional_vim_regex_highlighting = false,
+  },
+}
 
 -- LSP Config Setup
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
@@ -89,6 +113,7 @@ require'lspconfig'.ccls.setup {
   }
 }
 
+require'lspconfig'.rust_analyzer.setup{}
 
 -- TODO: add more lsp servers
 
@@ -167,15 +192,20 @@ vim.o.tabstop = 4             -- 1 tab = 4 spaces
 vim.o.shiftwidth = 4          -- autoindentation rule
 vim.o.expandtab = true        -- expand tab to spaces
 
+-- Set indentation by filetype
+vim.cmd[[autocmd Filetype html setlocal ts=2 sw=2 expandtab]]
+
 -- Editor Settings
 vim.o.number = true           -- see line numbers in gutter on the left
+vim.cmd[[set textwidth=120]]  -- set text width to 120
 vim.cmd[[colorscheme tokyonight-storm]] -- set editor colorscheme
+
 
 local signs = {
     Error = " ",
-    Warning = " ",
+    Warn = " ",
     Hint = " ",
-    Information = " "
+    Info = " "
 }
 
 for type, icon in pairs(signs) do
@@ -185,6 +215,7 @@ end
 
 ---------- SHORTCUTS -------
 vim.g.mapleader = ','         -- remap leader to comma ',' key
+vim.keymap.set('t', "<Esc>", "<C-\\><C-N>", {silent = true, noremap = true}) -- Exit terminal mode with ESC
 
 -- Telescope
 local builtin = require('telescope.builtin')
@@ -200,4 +231,5 @@ vim.keymap.set("n", "<leader>xd", "<cmd>TroubleToggle document_diagnostics<cr>",
 vim.keymap.set("n", "<leader>xl", "<cmd>TroubleToggle loclist<cr>", {silent = true, noremap = true})
 vim.keymap.set("n", "<leader>xq", "<cmd>TroubleToggle quickfix<cr>", {silent = true, noremap = true})
 vim.keymap.set("n", "gR", "<cmd>TroubleToggle lsp_references<cr>", {silent = true, noremap = true})
+
 
