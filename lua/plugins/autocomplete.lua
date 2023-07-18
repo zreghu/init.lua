@@ -1,5 +1,5 @@
 return {
-  { 'L3MON4D3/LuaSnip', version = "v1.2.*", build = "make install_jsregexp"},
+  -- { 'L3MON4D3/LuaSnip', version = "v1.2.*", build = "make install_jsregexp"},
   { "hrsh7th/nvim-cmp",
     event = "InsertEnter",
     dependencies = {
@@ -8,21 +8,27 @@ return {
       "hrsh7th/cmp-path",
       "hrsh7th/cmp-cmdline",
       "saadparwaiz1/cmp_luasnip",
+      "SirVer/ultisnips",
+      "quangnguyen30192/cmp-nvim-ultisnips",
     },
     opts = function()
       local cmp = require'cmp'
-      local luasnip = require'luasnip'
 
-      luasnip.setup{}
+      require("cmp_nvim_ultisnips").setup{}
+      local cmp_ultisnips_mappings = require("cmp_nvim_ultisnips.mappings")
+      vim.g.UltiSnipsSnippetDirectories = { "UltiSnips", "ultisnippets" }
+      -- local luasnip = require'luasnip'
+      -- luasnip.setup{}
+      -- require("luasnip.loaders.from_snipmate").lazy_load()
 
       return {
         snippet = {
           -- REQUIRED - you must specify a snippet engine
           expand = function(args)
             -- vim.fn["vsnip#anonymous"](args.body) -- For `vsnip` users.
-            require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
+            -- require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
             -- require('snippy').expand_snippet(args.body) -- For `snippy` users.
-            -- vim.fn["UltiSnips#Anon"](args.body) -- For `ultisnips` users.
+            vim.fn["UltiSnips#Anon"](args.body) -- For `ultisnips` users.
           end,
         },
 
@@ -35,20 +41,24 @@ return {
           ["<Tab>"] = cmp.mapping(function(fallback)
             if cmp.visible() then
               cmp.select_next_item()
-            elseif luasnip.expand_or_jumpable() then
-              luasnip.expand_or_jump()
             else
-              fallback()
+              cmp_ultisnips_mappings.expand_or_jump_forwards(fallback)
+            -- elseif luasnip.expand_or_jumpable() then
+            --   luasnip.expand_or_jump()
+            -- else
+            --  fallback()
             end
           end, {"i", "s"}),
 
           ["<S-Tab>"] = cmp.mapping(function(fallback)
             if cmp.visible() then
               cmp.select_prev_item()
-            elseif luasnip.jumpable(-1) then
-              luasnip.jump(-1)
             else
-              fallback()
+              cmp_ultisnips_mappings.jump_backwards(fallback)
+            -- elseif luasnip.jumpable(-1) then
+            --  luasnip.jump(-1)
+            -- else
+            --   fallback()
             end
           end, {"i", "s"}),
         }),
@@ -56,8 +66,8 @@ return {
         sources = cmp.config.sources({
           { name = 'nvim_lsp' },
           -- { name = 'vsnip' }, -- For vsnip users.
-          { name = 'luasnip' }, -- For luasnip users.
-          -- { name = 'ultisnips' }, -- For ultisnips users.
+          -- { name = 'luasnip' }, -- For luasnip users.
+          { name = 'ultisnips' }, -- For ultisnips users.
           -- { name = 'snippy' }, -- For snippy users.
         }, {
           { name = 'buffer' },
@@ -66,6 +76,4 @@ return {
     end
   }
 }
-
-
 

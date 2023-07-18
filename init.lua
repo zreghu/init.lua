@@ -56,6 +56,9 @@ end
 ---------- SHORTCUTS -------
 vim.keymap.set('t', "<Esc>", "<C-\\><C-N>", {silent = true, noremap = true}) -- Exit terminal mode with ESC
 
+-- NvimTree
+vim.keymap.set('n', '<C-f>', '<cmd>NvimTreeToggle<cr>', { silent = true, noremap = true })
+
 -- Buffer Navigation
 vim.keymap.set('n', 'gn', ':bnext<cr>', {})
 vim.keymap.set('n', 'gN', ':bprev<cr>', {})

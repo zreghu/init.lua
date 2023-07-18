@@ -1,4 +1,5 @@
 return {
+  { "nvim-tree/nvim-tree.lua", lazy = false, dependencies = "nvim-tree/nvim-web-devicons", opts = {} },
   { "nvim-telescope/telescope.nvim", tag = "0.1.2", dependencies = { "nvim-lua/plenary.nvim" }},
   { "folke/trouble.nvim", dependencies = "nvim-tree/nvim-web-devicons", opts = {} },
   { "nvim-lualine/lualine.nvim",
@@ -25,7 +26,9 @@ return {
   { "ahmedkhalf/project.nvim", lazy = false, opts = {},
     dependencies = { "nvim-telescope/telescope.nvim" },
     config = function()
-      require"project_nvim".setup{}
+      require"project_nvim".setup{
+        patterns = { ".git", "Makefile", "package.json", ".obsidian", "Cargo.toml" },
+      }
       require"telescope".load_extension('projects')
     end
   },
