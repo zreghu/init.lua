@@ -49,7 +49,6 @@ return {
           nls.builtins.formatting.stylua,
           nls.builtins.formatting.shfmt,
           nls.builtins.diagnostics.eslint,
-          nls.builtins.completion.spell,
           nls.builtins.diagnostics.cpplint,
           nls.builtins.diagnostics.flake8,
         },
