@@ -3,8 +3,6 @@ local capabilities = require('cmp_nvim_lsp').default_capabilities()
 local lspconfig = require('lspconfig')
 
 lspconfig.pyright.setup({
-  on_attach = on_attach,
-  flags = lsp_flags,
   capabilities = capabilities,
 })
 
@@ -35,27 +33,16 @@ lspconfig.lua_ls.setup({
   },
 })
 
-lspconfig.ccls.setup {
-  capabilities = capabilities,
-  init_options = {
-    compilationDatabaseDirectory = "build";
-    index = {
-      threads = 0;
-    };
-    clang = {
-      excludeArgs = { "-frounding-math"} ;
-    };
-  }
+lspconfig.clangd.setup {
+  capabilities = capabilities
 }
 
-lspconfig.rust_analyzer.setup({
+lspconfig.tsserver.setup {
   capabilities = capabilities
-})
+}
 
-lspconfig.grammarly.setup({
+lspconfig.marksman.setup{
   capabilities = capabilities
-})
+}
 
 -- TODO: add more lsp servers
-
-

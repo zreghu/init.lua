@@ -1,41 +1,18 @@
 return {
-  { "williamboman/mason.nvim", build = ":MasonUpdate", lazy = false,
-    opts = {
-      ui = {
-        icons = {
-          package_installed = "✓",
-          package_pending = "➜",
-          package_uninstalled = "✗"
-        }
-      }
-    }
-  },
-  { "williamboman/mason-lspconfig.nvim", opts = {} },
+  { "williamboman/mason.nvim", build = ":MasonUpdate", lazy = false, opts = {} },
+  { "williamboman/mason-lspconfig.nvim", lazy = false, opts = {} },
   { "neovim/nvim-lspconfig",
+    lazy = false,
     event = { "BufReadPost", "BufNewFile" },
     cmd = { "LspInfo", "LspInstall", "LspUninstall" },
   },
-  { "nvim-treesitter/nvim-treesitter", build = ":TSUpdate",
+  { "nvim-treesitter/nvim-treesitter",
+    lazy = false,
+    main = "nvim-treesitter.configs",
     opts = {
-      -- A list of parser names, or "all" (the five listed parsers should always be installed)
-      ensure_installed = { "c", "lua", "vim", "query" },
-
-      -- Install parsers synchronously (only applied to `ensure_installed`)
-      sync_install = false,
-
-      -- Automatically install missing parsers when entering buffer
-      -- Recommendation: set to false if you don't have `tree-sitter` CLI installed locally
+      ensure_installed = { "c", "lua", "vim", "query", "javascript", "python" },
       auto_install = true,
-
-      highlight = {
-        enable = true,
-
-        -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
-        -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
-        -- Using this option may slow down your editor, and you may see some duplicate highlights.
-        -- Instead of true it can also be a list of languages
-        additional_vim_regex_highlighting = { "markdown" },
-      },
+      highlight = { enable = true }
     }
   },
   { "jose-elias-alvarez/null-ls.nvim",

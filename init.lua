@@ -1,27 +1,55 @@
----------- SETTINGS --------
--- Lazy Plugin Manager
+----------- BOOTSTRAP LAZY ---------------
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
   vim.fn.system({
     "git",
     "clone",
     "--filter=blob:none",
-    "https://github.com/folke/lazy.nvim.git", "--branch=stable", -- latest stable release
+    "https://github.com/folke/lazy.nvim.git",
+    "--branch=stable", -- latest stable release
     lazypath,
   })
 end
 vim.opt.rtp:prepend(lazypath)
 
-vim.g.mapleader = ','         -- remap leader to comma ',' key
+-- Leader Key
+vim.g.mapleader = ','
 
-require('lazy').setup("plugins", {
-  ui = {
-    icons = {
-      lazy = "⋰  "
+require("lazy").setup({
+  { "folke/tokyonight.nvim", lazy = false, priority = 1000, opts = {} },
+  { "nvim-lualine/lualine.nvim", lazy = false, priority = 1000, opts = { options = { theme = 'palenight' }} },
+  { "nvim-telescope/telescope.nvim", tag = "0.1.2", dependencies = { "nvim-lua/plenary.nvim" } },
+  { "ahmedkhalf/project.nvim", lazy = false, opts = {},
+    config = function()
+      require"project_nvim".setup{
+        patterns = { ".git", "Makefile", "package.json", ".obsidian", "Cargo.toml" },
+      }
+      require"telescope".load_extension('projects')
+    end
+  },
+  { "folke/trouble.nvim", dependencies = "nvim-tree/nvim-web-devicons", opts = {} },
+  { "nvim-tree/nvim-tree.lua", lazy = false, dependencies = "nvim-tree/nvim-web-devicons", opts = {} },
+  { "akinsho/toggleterm.nvim", version = "*", dependencies = 'nvim-tree/nvim-web-devicons',
+    opts = { open_mapping = [[<C-t>]], direction = 'float' }
+  },
+  { "folke/zen-mode.nvim",
+    opts = { window = { height = 0.9 },
+      on_open = function()
+        vim.cmd[[Limelight]]
+      end,
+      on_close = function()
+        vim.cmd[[Limelight!]]
+      end,
     }
-  }
+  },
+  { "junegunn/limelight.vim" },
+  { "iamcco/markdown-preview.nvim", build = function() vim.fn["mkdp#util#install"]() end, ft = "markdown" },
+  { import = "plugins" }
 })
-require('lsp')
+
+
+---------- EDITOR SETTINGS -------
+require('lsp')  -- LSP Configuration
 
 -- Indentation
 vim.o.autoindent = true
@@ -31,23 +59,17 @@ vim.o.shiftwidth = 4          -- autoindentation rule
 vim.o.expandtab = true        -- expand tab to spaces
 
 -- Set indentation by filetype
-vim.cmd[[autocmd Filetype html setlocal ts=2 sw=2 expandtab]]
 vim.cmd[[autocmd Filetype lua setlocal ts=2 sw=2 expandtab]]
+vim.cmd[[autocmd Filetype javascript setlocal ts=2 sw=2 expandtab]]
 
 -- Editor Settings
 vim.o.number = true           -- see line numbers in gutter on the left
 vim.opt.termguicolors = true
 vim.cmd[[set textwidth=120]]  -- set text width to 120
-vim.cmd[[colorscheme tokyonight-storm]] -- set editor colorscheme
+vim.cmd[[colorscheme tokyonight-storm]]
 
 -- Fancy Diagnostic Icons
-local signs = {
-    Error = "",
-    Warn = "",
-    Hint = "",
-    Info = ""
-}
-
+local signs = { Error = "", Warn = "", Hint = "", Info = "" }
 for type, icon in pairs(signs) do
     local hl = "DiagnosticSign" .. type
     vim.fn.sign_define(hl, {text = icon, texthl = hl, numhl = hl})
@@ -55,9 +77,6 @@ end
 
 ---------- SHORTCUTS -------
 vim.keymap.set('t', "<Esc>", "<C-\\><C-N>", {silent = true, noremap = true}) -- Exit terminal mode with ESC
-
--- NvimTree
-vim.keymap.set('n', '<C-f>', '<cmd>NvimTreeToggle<cr>', { silent = true, noremap = true })
 
 -- Buffer Navigation
 vim.keymap.set('n', 'gn', ':bnext<cr>', {})
@@ -68,6 +87,9 @@ vim.keymap.set('n', '<C-J>', '<C-W><C-J>', { silent = true, noremap = true })
 vim.keymap.set('n', '<C-K>', '<C-W><C-K>', { silent = true, noremap = true })
 vim.keymap.set('n', '<C-L>', '<C-W><C-L>', { silent = true, noremap = true })
 vim.keymap.set('n', '<C-H>', '<C-W><C-H>', { silent = true, noremap = true })
+
+-- NvimTree
+vim.keymap.set('n', '<C-f>', '<cmd>NvimTreeToggle<cr>', { silent = true, noremap = true })
 
 -- Telescope
 local builtin = require('telescope.builtin')
@@ -89,4 +111,7 @@ vim.keymap.set("n", "gR", "<cmd>TroubleToggle lsp_references<cr>", {silent = tru
 
 -- Zen mode
 vim.keymap.set('n', '<leader>zz', '<cmd>ZenMode<cr>', {})
+
+-- Markdown Preview
+vim.keymap.set("n", "<leader>mm", "<cmd>MarkdownPreviewToggle<cr>", {silent = true, noremap = true})
 
